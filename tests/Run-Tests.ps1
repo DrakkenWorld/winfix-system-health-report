@@ -4,7 +4,7 @@ Import-Module (Join-Path $PSScriptRoot '../script/WinFix.Health.psm1') -Force
 $root = Join-Path ([IO.Path]::GetTempPath()) ('WinFixHealthTests-' + [guid]::NewGuid().ToString('N'))
 function Assert($value, $message) { if (-not $value) { throw $message } }
 try {
-    $fixture = [pscustomobject]@{SchemaVersion=1; ToolVersion='1.0.0'; GeneratedUtc='2026-11-07T00:00:00Z'; Sections=@(
+    $fixture = [pscustomobject]@{SchemaVersion=1; ToolVersion='1.1.0'; GeneratedUtc='2026-11-07T00:00:00Z'; Sections=@(
         [pscustomobject]@{Name='Windows';Status='ok';Data=@([pscustomobject]@{Caption='<script>alert("é")</script>';Bytes=1234567890123});Error=$null},
         [pscustomobject]@{Name='Drivers';Status='ok';Data=@();Error=$null},
         [pscustomobject]@{Name='Events';Status='unavailable';Data=@();Error='<denied>&'}

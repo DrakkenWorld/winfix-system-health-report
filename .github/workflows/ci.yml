@@ -20,6 +20,9 @@ jobs:
       - name: Test the extracted release package
         shell: pwsh
         run: ./tests/Test-Package.ps1
+      - name: Test the portable Windows application
+        shell: pwsh
+        run: ./tests/Test-Desktop.ps1
   release:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: test
@@ -41,14 +44,14 @@ jobs:
           $draft=gh release view $tag --json isDraft --jq .isDraft 2>$null
           $exists=$LASTEXITCODE -eq 0
           if ($exists -and $draft -eq 'false') { Write-Host "$tag already published"; exit 0 }
-          ./Build-Release.ps1
+          ./Build-Release.ps1 -IncludeDesktop
           if (-not $exists) {
             gh release create $tag --draft --target $env:COMMIT_SHA --title "WinFix System Health Report $tag" --notes-file docs/RELEASE-NOTES.md
             if ($LASTEXITCODE) { throw 'Draft creation failed' }
           }
-          gh release upload $tag "artifacts/WinFix-SystemHealthReport-v$version.zip" artifacts/SHA256SUMS.txt --clobber
+          gh release upload $tag "artifacts/WinFix-SystemHealthReport-v$version.zip" artifacts/WinFix-SystemHealthReport-Windows-x64.exe artifacts/SHA256SUMS.txt --clobber
           if ($LASTEXITCODE) { throw 'Upload failed; release remains draft' }
           $count=gh release view $tag --json assets --jq '.assets | length'
-          if ($LASTEXITCODE -or [int]$count -ne 2) { throw 'Asset verification failed' }
+          if ($LASTEXITCODE -or [int]$count -ne 3) { throw 'Asset verification failed' }
           gh release edit $tag --draft=false --latest
           if ($LASTEXITCODE) { throw 'Publication failed' }

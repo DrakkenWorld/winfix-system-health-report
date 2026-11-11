@@ -1,6 +1,6 @@
 #requires -Version 5.1
 [CmdletBinding()]
-param([string]$OutputDirectory = (Join-Path $PSScriptRoot 'artifacts'))
+param([string]$OutputDirectory = (Join-Path $PSScriptRoot 'artifacts'), [switch]$IncludeDesktop)
 $ErrorActionPreference='Stop'
 $version=(Get-Content (Join-Path $PSScriptRoot 'VERSION') -Raw).Trim()
 if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid version' }
@@ -17,8 +17,15 @@ try {
     if (Test-Path -LiteralPath $zip) { throw "Output already exists: $zip. Use a new output directory." }
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     [IO.Compression.ZipFile]::CreateFromDirectory($stage,$zip)
-    $hash=(Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText((Join-Path $output 'SHA256SUMS.txt'), "$hash  $([IO.Path]::GetFileName($zip))" + [Environment]::NewLine,[Text.Encoding]::ASCII)
+    $assets = @($zip)
+    if ($IncludeDesktop) {
+        & "$PSScriptRoot/desktop/Build-Portable.ps1" -OutputDirectory $output
+        $assets += Join-Path $output 'WinFix-SystemHealthReport-Windows-x64.exe'
+    }
+    $hashes = foreach ($asset in $assets) {
+        '{0}  {1}' -f (Get-FileHash -LiteralPath $asset -Algorithm SHA256).Hash.ToLowerInvariant(), [IO.Path]::GetFileName($asset)
+    }
+    [IO.File]::WriteAllLines((Join-Path $output 'SHA256SUMS.txt'), [string[]]$hashes, [Text.Encoding]::ASCII)
     Write-Host $zip
 } finally {
     if ([IO.Path]::GetDirectoryName($stage) -eq $tempRoot.TrimEnd([IO.Path]::DirectorySeparatorChar)) {

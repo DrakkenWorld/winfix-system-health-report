@@ -1,5 +1,9 @@
 # Validation
 
+## Version 1.1.0
+
+The x64 EXE compiled with warnings treated as errors. On Windows 10 build 19045, the application opened successfully and its embedded collector created complete French and English HTML/JSON reports in folders with spaces, accented characters and an ampersand. The test also verified that a file at the requested output path is preserved. GitHub Actions runs the desktop, PowerShell and archive tests before publishing the EXE and ZIP.
+
 ## Version 1.0.0 — 2026-11-11
 
 All six sources were collected successfully in the normal Windows session on Windows 10 build 19045 with Windows PowerShell 5.1 and PowerShell 7. The event collector reads raw levels through the Windows event log API. This avoids the provider-description failure seen in the preview.

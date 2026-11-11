@@ -2,7 +2,15 @@
 
 Un inventaire Windows en lecture seule, avec rapports HTML et JSON conservés sur votre ordinateur.
 
-1. Téléchargez **WinFix-SystemHealthReport-v1.0.0.zip** dans les [versions GitHub](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
+## Application Windows
+
+Téléchargez [WinFix-SystemHealthReport-Windows-x64.exe](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest/download/WinFix-SystemHealthReport-Windows-x64.exe) et double-cliquez dessus sous Windows 10 ou 11 x64. Choisissez la langue et cliquez sur **Créer le rapport**. Les boutons de résultat permettent d’ouvrir le rapport HTML ou son dossier. Les fichiers sont enregistrés dans **Documents → WinFix-Reports** par défaut. Vous pouvez choisir un autre dossier avant l’analyse.
+
+L’application portable utilise Windows PowerShell 5.1 et .NET Framework fournis avec Windows. Elle utilise vos droits habituels et applique sa stratégie d’exécution au seul processus de collecte. L’exécutable est non signé. Windows peut afficher un avertissement d’éditeur.
+
+## Archive PowerShell
+
+1. Téléchargez le ZIP dans les [versions GitHub](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
 2. Extrayez tous les fichiers, puis double-cliquez sur **Start-FR.cmd**.
 3. Consultez le rapport HTML dans le navigateur. Retrouvez les deux fichiers dans **WinFix-Reports**, à côté du lanceur.
 

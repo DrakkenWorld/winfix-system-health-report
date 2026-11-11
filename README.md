@@ -2,7 +2,15 @@
 
 A read-only Windows inventory with HTML and JSON reports that stay on your computer.
 
-1. Download and fully extract **WinFix-SystemHealthReport-v1.0.0.zip** from [GitHub Releases](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
+## Windows application
+
+Download [WinFix-SystemHealthReport-Windows-x64.exe](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest/download/WinFix-SystemHealthReport-Windows-x64.exe) and double-click it on Windows 10/11 x64. Choose a language and click **Create report**. Open the HTML report or its folder using the buttons that appear after collection. The default destination is **Documents → WinFix-Reports** and can be changed before collection.
+
+The portable application uses Windows PowerShell 5.1 and .NET Framework supplied with Windows. It runs as your current user. It applies its execution policy to the collection process only. The executable is unsigned, so Windows may display a publisher warning.
+
+## PowerShell ZIP
+
+1. Download and fully extract the ZIP from [GitHub Releases](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
 2. Double-click **Start-EN.cmd** in the extracted folder.
 3. Read the HTML report in your browser. Find both files in **WinFix-Reports** next to the launcher.
 
@@ -25,3 +33,5 @@ The tool reads local sources without requiring administrator rights. Access depe
 ## Validation
 
 Run `tests/Run-Tests.ps1` under both PowerShell editions and `tests/Test-Package.ps1` to test the extracted ZIP. Use `Build-Release.ps1` to generate a ZIP and SHA-256 checksum. See [validation evidence](docs/VALIDATION.md) and the [MIT license](LICENSE).
+
+On Windows x64, `desktop/Build-Portable.ps1` builds the EXE with the Windows .NET Framework compiler. `tests/Test-Desktop.ps1` checks window startup, both languages and report creation from the EXE. `Build-Release.ps1 -IncludeDesktop` includes the EXE in the release checksums.
