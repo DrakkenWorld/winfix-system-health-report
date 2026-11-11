@@ -1,19 +1,25 @@
 # WinFix — Rapport de santé du système
 
-Version 0.1.0 : aperçu local, pas encore de version stable publiée.
+Un inventaire Windows en lecture seule, avec rapports HTML et JSON conservés sur votre ordinateur.
 
-Inventaire Windows en lecture seule, avec rapports HTML et JSON locaux. Compatible Windows PowerShell 5.1 et PowerShell 7, sans dépendance supplémentaire ni obligation de droits administrateur. Les sources inaccessibles sont signalées.
+1. Téléchargez **WinFix-SystemHealthReport-v1.0.0.zip** dans les [versions GitHub](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
+2. Extrayez tous les fichiers, puis double-cliquez sur **Start-FR.cmd**.
+3. Consultez le rapport HTML dans le navigateur. Retrouvez les deux fichiers dans **WinFix-Reports**, à côté du lanceur.
+
+Le lanceur utilise Windows PowerShell 5.1, inclus dans Windows 10 et 11. Sa stratégie d’exécution ne s’applique qu’au processus qu’il ouvre. Vérifiez le code téléchargé avant de l’exécuter.
+
+## Utilisation avec PowerShell
 
 ```powershell
-powershell.exe -NoProfile -File ./script/WinFix-SystemHealthReport.ps1 -OutputDirectory ./WinFix-Reports -Language fr -EventDays 7
+.\script\WinFix-SystemHealthReport.ps1 -Language fr -OutputDirectory .\WinFix-Reports -EventDays 7
 ```
 
-Avec PowerShell 7, remplacez powershell.exe par pwsh.exe. Vérifiez le code et respectez votre stratégie d’exécution. Ouvrez report.html dans le dossier affiché. Chaque exécution crée un dossier distinct.
+Lancez la commande depuis le dossier extrait avec Windows PowerShell 5.1 ou PowerShell 7. Ajoutez `-OpenReport` pour ouvrir le rapport. La période des événements va de 1 à 30 jours. Chaque exécution crée un dossier distinct. Le code 0 indique une collecte complète, le code 2 un rapport partiel et le code 1 un échec.
 
-Le rapport rassemble Windows et le dernier démarrage, fabricant/modèle/mémoire, processeur, volumes fixes, pilotes et nombres d’événements critiques/erreurs/avertissements des journaux System et Application. La période va de 1 à 30 jours (7 par défaut). Maximum : les 1 000 événements correspondants les plus récents par journal. LimitReached signale une éventuelle troncature. Les noms des champs techniques restent identiques en français et en anglais.
+## Contenu et confidentialité
 
-Aucune réparation, suppression, modification de services, télémétrie ou requête réseau volontaire. Aucun score de santé : ces informations ne suffisent pas à diagnostiquer une panne. Les messages détaillés des événements, noms d’utilisateur, adresses IP et numéros de série ne sont pas collectés volontairement. Les modèles matériels et messages d’erreur peuvent toutefois être privés : relisez avant partage.
+Le rapport rassemble l’édition et le démarrage de Windows, le modèle du PC, la mémoire, le processeur, les volumes fixes et les pilotes. Les journaux Système et Application sont résumés séparément. Chaque résumé compte au plus les 1 000 événements critiques, erreurs et avertissements les plus récents dans la période choisie. Le rapport signale un résultat tronqué ou un journal inaccessible. Ces comptes donnent un contexte pour le dépannage.
 
-Codes de sortie : 0 collecte complète ; 2 rapport créé avec sources indisponibles ; 1 erreur fatale (un dossier partiel peut rester). La collecte est synchrone, sans annulation interactive ni délai global ; chaque requête CIM demande un délai de 15 secondes. L’inventaire des pilotes peut être volumineux. Les dates et octets du JSON ne dépendent pas de la langue.
+La collecte se fait localement et peut s’effectuer sans droits administrateur. Les droits Windows peuvent limiter certaines sources. Le rapport exclut les messages détaillés des événements, noms de machine et d’utilisateur, numéros de série et adresses IP. Vérifiez les modèles matériels et les messages d’erreur avant de partager le rapport.
 
-Tests : `powershell.exe -NoProfile -File tests/Run-Tests.ps1`, puis avec `pwsh.exe`. La validation manuelle sur Windows 11 reste à effectuer. Licence MIT ; voir LICENSE. Plus de détails dans [le guide anglais](README.md).
+Le code est sous [licence MIT](LICENSE). Les [résultats des tests](docs/VALIDATION.md) et le [guide anglais](README.md) sont inclus.

@@ -1,5 +1,9 @@
-name: Windows health report tests
-on: [push, pull_request, workflow_dispatch]
+name: Windows tests and stable release
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -13,3 +17,38 @@ jobs:
       - name: PowerShell 7
         shell: pwsh
         run: ./tests/Run-Tests.ps1
+      - name: Test the extracted release package
+        shell: pwsh
+        run: ./tests/Test-Package.ps1
+  release:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Publish verified package
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $version=(Get-Content VERSION -Raw).Trim()
+          $tag="v$version"
+          $draft=gh release view $tag --json isDraft --jq .isDraft 2>$null
+          $exists=$LASTEXITCODE -eq 0
+          if ($exists -and $draft -eq 'false') { Write-Host "$tag already published"; exit 0 }
+          ./Build-Release.ps1
+          if (-not $exists) {
+            gh release create $tag --draft --target $env:COMMIT_SHA --title "WinFix System Health Report $tag" --notes-file docs/RELEASE-NOTES.md
+            if ($LASTEXITCODE) { throw 'Draft creation failed' }
+          }
+          gh release upload $tag "artifacts/WinFix-SystemHealthReport-v$version.zip" artifacts/SHA256SUMS.txt --clobber
+          if ($LASTEXITCODE) { throw 'Upload failed; release remains draft' }
+          $count=gh release view $tag --json assets --jq '.assets | length'
+          if ($LASTEXITCODE -or [int]$count -ne 2) { throw 'Asset verification failed' }
+          gh release edit $tag --draft=false --latest
+          if ($LASTEXITCODE) { throw 'Publication failed' }

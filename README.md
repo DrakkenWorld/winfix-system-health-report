@@ -1,19 +1,27 @@
 # WinFix System Health Report
 
-Version 0.1.0 — local preview, not a published stable release.
+A read-only Windows inventory with HTML and JSON reports that stay on your computer.
 
-A read-only Windows inventory with local HTML and JSON exports. Runs on Windows PowerShell 5.1 and PowerShell 7, without modules to install or administrator rights required. Some sources may be unavailable under restricted accounts.
+1. Download and fully extract **WinFix-SystemHealthReport-v1.0.0.zip** from [GitHub Releases](https://github.com/DrakkenWorld/winfix-system-health-report/releases/latest).
+2. Double-click **Start-EN.cmd** in the extracted folder.
+3. Read the HTML report in your browser. Find both files in **WinFix-Reports** next to the launcher.
+
+The launcher uses Windows PowerShell 5.1, included with Windows 10/11. It applies its execution policy only to that PowerShell process. Review downloaded code before running it. A [French guide](README.fr.md) is available.
+
+## PowerShell
 
 ```powershell
-powershell.exe -NoProfile -File ./script/WinFix-SystemHealthReport.ps1 -OutputDirectory ./WinFix-Reports -Language en -EventDays 7
+.\script\WinFix-SystemHealthReport.ps1 -Language en -OutputDirectory .\WinFix-Reports -EventDays 7
 ```
 
-Use `pwsh.exe` for PowerShell 7. Review the downloaded code and follow your execution policy; this tool does not change that policy. Open report.html in the printed output directory. Every run creates a new directory. JSON schema version 1 preserves numeric byte values; dates include an offset or UTC marker. HTML field names remain the stable Windows inventory names in both languages.
+Run from an extracted folder in Windows PowerShell 5.1 or PowerShell 7. Use `-OpenReport` to open HTML after export. Choose 1–30 days for events. Each run creates a distinct folder. Exit codes are 0 for complete collection, 2 for a partial report and 1 for a fatal error.
 
-Sources: Windows version/boot time, computer manufacturer/model/RAM, CPU, local fixed volumes, signed-driver inventory, and counts of critical/error/warning events in System and Application. EventDays accepts 1–30 (default 7). Events are capped at the latest 1,000 matching records per log; LimitReached signals possible truncation. An event section error discards that section's partial data and records the failure.
+## What the report contains
 
-No repairs, service changes, deletion, remote requests, telemetry, health score, or automatic report opening. This is not a complete security audit or a Windows support-status checker. Counts and unsigned drivers do not prove a fault. No deliberate collection of serial numbers, computer/user names, IP addresses or event message text. Hardware names and operating-system error messages can still be private: inspect reports before sharing. Drivers can produce a large report; collection is synchronous. Individual CIM operations request a 15-second timeout; there is no global deadline or interactive cancellation interface in this preview.
+Windows edition, build and boot time, computer model and RAM, CPU, fixed-drive capacity and free space, driver names, versions and signing status. System and Application logs are summarized separately. Each count covers up to 1,000 of the newest matching critical, error and warning events in the requested period. A truncated log is labeled. An inaccessible log has unknown counts while the other log remains available. Counts are inventory data and require context to diagnose a problem.
 
-Exit codes: 0 all sources collected; 2 at least one source unavailable and reports written; 1 fatal collection/export error (a partial output directory may remain). PowerShell parameter binding errors are nonzero. Outputs are the only intended filesystem changes. Reports contain no external assets or executable scripts; strings are HTML escaped.
+The tool reads local sources without requiring administrator rights. Access depends on Windows permissions. Reports omit event message text, machine and user names, serial numbers and IP addresses by design. Review hardware and error details before sharing. JSON uses schema version 1 and UTC timestamps. HTML and JSON are written to the chosen output folder.
 
-Run `powershell.exe -NoProfile -File tests/Run-Tests.ps1`, then repeat with `pwsh.exe`. Tests cover deterministic collection failures, rendering, input validation and a real Windows collection. Clean Windows 11 manual testing is still required. See [French guide](README.fr.md), [validation](docs/VALIDATION.md) and [MIT license](LICENSE).
+## Validation
+
+Run `tests/Run-Tests.ps1` under both PowerShell editions and `tests/Test-Package.ps1` to test the extracted ZIP. Use `Build-Release.ps1` to generate a ZIP and SHA-256 checksum. See [validation evidence](docs/VALIDATION.md) and the [MIT license](LICENSE).

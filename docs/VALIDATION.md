@@ -1,4 +1,14 @@
-# Validation — 2026-11-07
+# Validation
+
+## Version 1.0.0 — 2026-11-11
+
+All six sources were collected successfully in the normal Windows session on Windows 10 build 19045 with Windows PowerShell 5.1 and PowerShell 7. The event collector reads raw levels through the Windows event log API. This avoids the provider-description failure seen in the preview.
+
+Both editions passed report localization, HTML escaping, numeric JSON, Unicode, unique output directories, invalid input rejection and real collection. Event fixtures verify empty logs, the difference between an exact limit and truncation, counts by level, resource cleanup and preserving one log when the other is inaccessible.
+
+The Windows workflow runs the two PowerShell editions and verifies the ZIP by extracting it and running its PowerShell entry point before publishing. The [Actions history](https://github.com/DrakkenWorld/winfix-system-health-report/actions) records hosted results. The local test used Windows 10. The hosted workflow records its own Windows runner environment.
+
+## Preview — 2026-11-07
 
 Local Windows 10 build 19045, Windows PowerShell 5.1.19041.7802 and PowerShell 7.6.9.
 
